@@ -1,0 +1,385 @@
+swagger: '2.0'
+info:
+  description: Flora@Home enables any web shop to sell a range of fresh flowers and plants. Completely integrated into your own web shop. Our REST API allows you to request your own assortment. The API makes a two-way traffic between applications and webshops possible.
+  version: 1.1.0
+  title: Flora@Home API
+  contact:
+    name: support
+    email: api_support@floraathome.nl
+host: api.floraathome.nl
+basePath: /v1
+paths:
+  /products/get:
+    get:
+      tags:
+        - products
+      summary: Returns a full list of products
+      description: 'Thanks to the API link, Flora@Home gets all your customers orders automatically. Including the correct data to send the product to the customer. Flora@Home transfers this in to an order to the breeder. The breeder does not get the data from your clients, only the product that they need to deliver. Flora@Home has a REST API that enables you to exchange data with webshops.<br/><br/>We advise developers to use the v1/products/get endpoint to do a full product synchronisation once every 24 hours.<br/>The v1/products/recent endpoint can be used to get only recent product changes after a certain datetime.'
+      operationId: getAllProducts
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: apitoken
+          in: query
+          description: Your unique API token
+          required: true
+          type: string
+        - name: type
+          in: query
+          description: Choose "json" or "xml" as format for request and response data
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            xml:
+              name: response
+              wrapped: true
+            properties:
+              success:
+                type: boolean
+                description: 'true'
+              data:
+                type: array
+                xml:
+                  name: data
+                  wrapped: true
+                items:
+                  $ref: '#/definitions/Product'
+        '403':
+          description: Forbidden operation
+          schema:
+            type: object
+            xml:
+              name: response
+              wrapped: true
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: API token invalid
+  /products/recent:
+    get:
+      tags:
+        - products
+      summary: Return a list of products that where changed after a certain datetime
+      description: 'Return a list of product that where added, updated or deleted after a cetain datetime. The datetime cannot be older than one week<br/><br/>We advise developers to use this endpoint in combination with /v1/products/get.<br/>The recommended practice is to do a full sync of the products every 24 hours using the /v1/products/get endpoint and use the /v1/products/recent endpoint to update your products every 15 minutes.'
+      operationId: getRecentProducts
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: apitoken
+          in: query
+          description: Your unique API token
+          required: true
+          type: string
+        - name: type
+          in: query
+          description: Choose "json" or "xml" as format for request and response data
+          required: true
+          type: string
+        - name: fromdt
+          in: query
+          description: 'ISO8601 DateTime string of your last successfull sync, only products changed after fromdt will be returned.'
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: object
+            xml:
+              name: response
+              wrapped: true
+            properties:
+              success:
+                type: boolean
+                description: 'true'
+              data:
+                xml:
+                  name: data
+                  wrapped: true
+                properties:
+                  added:
+                    type: array
+                    xml:
+                      name: added
+                      wrapped: true
+                    items:
+                      $ref: '#/definitions/Product'
+                  updated:
+                    type: array
+                    xml:
+                      name: updated
+                      wrapped: true
+                    items:
+                      $ref: '#/definitions/Product'
+                  deleted:
+                    type: array
+                    xml:
+                      name: deleted
+                      wrapped: true
+                    items:
+                      $ref: '#/definitions/Product'
+        '403':
+          description: Forbidden operation
+          schema:
+            type: object
+            xml:
+              name: response
+              wrapped: true
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: API token invalid
+  /orders/create:
+    post:
+      tags:
+        - orders
+      summary: Place an order
+      description: 'The API method gives you access to the complete assortment. If you want, as a developer, to make a connection with API, you need an API token (send to the known email address in the system). As webshop administrator, you can customize the assortment thru www.floraathome.nl. Changes in the assortment are immediately visible in the API results.'
+      operationId: create
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/xml
+        - application/json
+      parameters:
+        - name: apitoken
+          in: query
+          description: Your unique API token
+          required: true
+          type: string
+        - name: type
+          in: query
+          description: Choose "json" or "xml" as format for request and response data
+          required: true
+          type: string
+        - name: body
+          in: body
+          description: The order object that needs to be created and send via form-data
+          required: true
+          schema:
+            $ref: '#/definitions/Order'
+      responses:
+        '200':
+          description: Successful operation
+          schema:
+            type: object
+            xml:
+              name: response
+              wrapped: true
+            properties:
+              success:
+                type: boolean
+                description: 'false'
+              ordercode:
+                type: string
+                example: 594a8847d4f9e
+        '400':
+          description: Invalid operation
+          schema:
+            type: object
+            xml:
+              name: response
+              wrapped: true
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: object
+                xml:
+                  name: error
+                  wrapped: true
+                properties:
+                  '1':
+                    type: string
+                    example: Name is required
+                    xml:
+                      name: item
+                  '2':
+                    type: string
+                    example: Street is required
+                    xml:
+                      name: item
+        '403':
+          description: Forbidden operation
+          schema:
+            type: object
+            xml:
+              name: response
+              wrapped: true
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: API token invalid
+definitions:
+  Order:
+    type: object
+    required:
+      - firstname
+      - lastname
+      - street
+      - postalcode
+      - city
+      - email
+      - orderlines
+      - country
+    properties:
+      referenceWebshop:
+        type: string
+      referenceCustomer:
+        type: string
+      companyname:
+        type: string
+        maxLength: 35
+      department:
+        type: string
+        maxLength: 35
+      firstname:
+        type: string
+        maxLength: 35
+      lastname:
+        type: string
+        maxLength: 35
+      street:
+        type: string
+        maxLength: 95
+        description: 'In case you donâ€™t have a separate street and house number, please use this field for the full address.'
+      buildingName:
+        type: string
+        maxLength: 35
+      floor:
+        type: string
+        maxLength: 35
+      housenumber:
+        type: string
+        maxLength: 35
+      housenumberAddition:
+        type: string
+        maxLength: 35
+      postalcode:
+        type: string
+        maxLength: 19
+      city:
+        type: string
+        maxLength: 35
+      district:
+        type: string
+        maxLength: 35
+      region:
+        type: string
+        maxLength: 35
+      country:
+        type: string
+        pattern: '[A-Z]{2}'
+        minLength: 2
+        maxLength: 2
+      doorcode:
+        type: string
+        maxLength: 35
+      remark:
+        type: string
+        maxLength: 35
+      phone:
+        type: string
+      email:
+        type: string
+      orderlines:
+        type: array
+        xml:
+          name: orderlines
+          wrapped: true
+        items:
+          $ref: '#/definitions/Orderline'
+    xml:
+      name: order
+  Orderline:
+    type: object
+    required:
+      - productcode
+      - quantity
+    properties:
+      productcode:
+        type: string
+      quantity:
+        type: integer
+        example: '1'
+      text:
+        type: string
+        example: Optional text to add to the orderline
+    xml:
+      name: orderline
+  Product:
+    description: 'Properties not marked with the red asterisk can contain an empty string'
+    type: object
+    required:
+      - timestamp
+      - productcode
+      - dutchname
+      - numberperorder
+      - purchaseprice
+      - description
+      - images
+      - category
+    properties:
+      timestamp:
+        type: string
+      productcode:
+        type: string
+      potsize:
+        type: string
+      height:
+        type: string
+      dutchname:
+        type: string
+      linnaeusname:
+        type: string
+      numberperorder:
+        type: string
+      purchaseprice:
+        type: string
+        description: Excl. VAT
+      promotionaltext:
+        type: string
+      description:
+        type: string
+      specifications:
+        type: string
+      caretips:
+        type: string
+      aboutgrower:
+        type: string
+      branches:
+        type: string
+      images:
+        type: array
+        xml:
+          name: images
+          wrapped: true
+        items:
+          xml:
+            name: item
+            wrapped: true
+          type: string
+          example: 'http://www.floraathome.nl/uploads/product/DENOAP260/DENOAP260.1.jpg'
+      grower:
+        type: string
+      category:
+        type: string
+    xml:
+      name: item
