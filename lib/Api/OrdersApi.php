@@ -89,7 +89,7 @@ class OrdersApi
      *
      * @param  string $apitoken Your unique API token (required)
      * @param  string $type Choose \&quot;json\&quot; or \&quot;xml\&quot; as format for request and response data (required)
-     * @param  \Swagger\Client\Model\Order $body The order object that needs to be created and send via form-data (required)
+     * @param  string $body The order object that needs to be created and send via form-data (required)
      *
      * @throws \Swagger\Client\ApiException on non-2xx response
      * @throws \InvalidArgumentException
@@ -108,7 +108,7 @@ class OrdersApi
      *
      * @param  string $apitoken Your unique API token (required)
      * @param  string $type Choose \&quot;json\&quot; or \&quot;xml\&quot; as format for request and response data (required)
-     * @param  \Swagger\Client\Model\Order $body The order object that needs to be created and send via form-data (required)
+     * @param  string $body The order object that needs to be created and send via form-data (required)
      *
      * @throws \Swagger\Client\ApiException on non-2xx response
      * @throws \InvalidArgumentException
@@ -201,7 +201,7 @@ class OrdersApi
      *
      * @param  string $apitoken Your unique API token (required)
      * @param  string $type Choose \&quot;json\&quot; or \&quot;xml\&quot; as format for request and response data (required)
-     * @param  \Swagger\Client\Model\Order $body The order object that needs to be created and send via form-data (required)
+     * @param  string $body The order object that needs to be created and send via form-data (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
@@ -223,7 +223,7 @@ class OrdersApi
      *
      * @param  string $apitoken Your unique API token (required)
      * @param  string $type Choose \&quot;json\&quot; or \&quot;xml\&quot; as format for request and response data (required)
-     * @param  \Swagger\Client\Model\Order $body The order object that needs to be created and send via form-data (required)
+     * @param  string $body The order object that needs to be created and send via form-data (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
@@ -275,7 +275,7 @@ class OrdersApi
      *
      * @param  string $apitoken Your unique API token (required)
      * @param  string $type Choose \&quot;json\&quot; or \&quot;xml\&quot; as format for request and response data (required)
-     * @param  \Swagger\Client\Model\Order $body The order object that needs to be created and send via form-data (required)
+     * @param  string $body The order object that needs to be created and send via form-data (required)
      *
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
@@ -318,11 +318,12 @@ class OrdersApi
         }
 
 
+        // form params
+        if ($body !== null) {
+            $formParams['body'] = ObjectSerializer::toFormValue($body);
+        }
         // body params
         $_tempBody = null;
-        if (isset($body)) {
-            $_tempBody = $body;
-        }
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
@@ -331,7 +332,7 @@ class OrdersApi
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/xml', 'application/json'],
-                ['application/json', 'application/xml']
+                ['application/x-www-form-urlencoded']
             );
         }
 

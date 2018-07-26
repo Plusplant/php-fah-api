@@ -63,7 +63,7 @@ $apiInstance = new Swagger\Client\Api\OrdersApi(
 );
 $apitoken = "apitoken_example"; // string | Your unique API token
 $type = "type_example"; // string | Choose \"json\" or \"xml\" as format for request and response data
-$body = new \Swagger\Client\Model\Order(); // \Swagger\Client\Model\Order | The order object that needs to be created and send via form-data
+$body = "body_example"; // string | The order object that needs to be created and send via form-data
 
 try {
     $result = $apiInstance->create($apitoken, $type, $body);

@@ -149,8 +149,7 @@ paths:
       description: 'The API method gives you access to the complete assortment. If you want, as a developer, to make a connection with API, you need an API token (send to the known email address in the system). As webshop administrator, you can customize the assortment thru www.floraathome.nl. Changes in the assortment are immediately visible in the API results.'
       operationId: create
       consumes:
-        - application/json
-        - application/xml
+        - application/x-www-form-urlencoded
       produces:
         - application/xml
         - application/json
@@ -166,7 +165,7 @@ paths:
           required: true
           type: string
         - name: body
-          in: body
+          in: formData
           description: The order object that needs to be created and send via form-data
           required: true
           schema:

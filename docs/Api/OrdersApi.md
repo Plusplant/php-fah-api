@@ -26,7 +26,7 @@ $apiInstance = new Swagger\Client\Api\OrdersApi(
 );
 $apitoken = "apitoken_example"; // string | Your unique API token
 $type = "type_example"; // string | Choose \"json\" or \"xml\" as format for request and response data
-$body = new \Swagger\Client\Model\Order(); // \Swagger\Client\Model\Order | The order object that needs to be created and send via form-data
+$body = "body_example"; // string | The order object that needs to be created and send via form-data
 
 try {
     $result = $apiInstance->create($apitoken, $type, $body);
@@ -43,7 +43,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **apitoken** | **string**| Your unique API token |
  **type** | **string**| Choose \&quot;json\&quot; or \&quot;xml\&quot; as format for request and response data |
- **body** | [**\Swagger\Client\Model\Order**](../Model/Order.md)| The order object that needs to be created and send via form-data |
+ **body** | **string**| The order object that needs to be created and send via form-data |
 
 ### Return type
 
@@ -55,7 +55,7 @@ No authorization required
 
 ### HTTP request headers
 
- - **Content-Type**: application/json, application/xml
+ - **Content-Type**: application/x-www-form-urlencoded
  - **Accept**: application/xml, application/json
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../README.md#documentation-for-models) [[Back to README]](../../README.md)
